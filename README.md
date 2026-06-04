@@ -27,6 +27,12 @@ Then load it: open `chrome://extensions` → enable **Developer mode** →
 puzzle-piece 🧩 in Chrome's toolbar and pin **Rename Tab**. The pencil icon that
 appears is your rename button.
 
+<p align="center">
+  <img src="media/screenshot.png" alt="Rename Tab loaded on chrome://extensions, with the pinned toolbar icon highlighted" width="760">
+  <br>
+  <em>Loaded via “Load unpacked,” then pinned to the toolbar — that pencil is your rename button.</em>
+</p>
+
 > For live development with hot-reload, run `make dev` instead of `make build`, load
 > `extension/dist` once, and CRXJS reloads on every save.
 
