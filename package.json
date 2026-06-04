@@ -1,7 +1,7 @@
 {
     "name": "rename-tab",
     "version": "0.1.0",
-    "description": "🦝 Rename your Chrome tabs with F2 or right-click — the name sticks even when the page fights back.",
+    "description": "🦝 Rename your Chrome tabs with F2 or right-click. The name sticks even when the page fights back.",
     "type": "module",
     "private": true,
     "scripts": {

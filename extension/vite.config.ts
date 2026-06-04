@@ -13,7 +13,7 @@ export default defineConfig({
     build: {
         outDir: "dist",
         emptyOutDir: true,
-        // Let crxjs derive Rollup inputs from the manifest — don't set
+        // Let crxjs derive Rollup inputs from the manifest; don't set
         // rollupOptions.input here (it breaks the crxjs dev server).
     },
 });

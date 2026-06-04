@@ -1,4 +1,4 @@
-// Rename Tab — content script (runs at document_start on every page).
+// Rename Tab: content script (runs at document_start on every page).
 //
 // Does three things:
 //   1. Keeps a custom title "stuck" against pages/SPAs that rewrite document.title.
@@ -40,7 +40,7 @@ declare global {
             return;
         }
         if (document.title === customTitle) {
-            return; // already correct — breaks the observer feedback loop
+            return; // already correct; breaks the observer feedback loop
         }
         applying = true;
         document.title = customTitle;
@@ -72,7 +72,7 @@ declare global {
     function ensureHeadObserver(): void {
         const head = document.head || document.querySelector("head");
         if (!head) {
-            // <head> not parsed yet at document_start — retry next frame.
+            // <head> not parsed yet at document_start; retry next frame.
             requestAnimationFrame(ensureHeadObserver);
             return;
         }
@@ -93,7 +93,7 @@ declare global {
         const trimmed = title.trim();
         customTitle = trimmed ? trimmed : null;
         if (customTitle == null) {
-            return; // cleared — stop forcing, let the page set its own title
+            return; // cleared; stop forcing, let the page set its own title
         }
         if (!getTitleEl()) {
             const t = document.createElement("title");
