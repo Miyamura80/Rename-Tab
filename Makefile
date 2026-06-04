@@ -10,7 +10,7 @@ RESET=\033[0m
 ### Help
 .PHONY: help
 help: ## Show this help message
-	@echo "$(BLUE)Rename Tab — Make targets$(RESET)"
+	@echo "$(BLUE)Rename Tab : Make targets$(RESET)"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*?## "; category=""} \
 		/^### / {category = substr($$0, 5); next} \
@@ -61,6 +61,10 @@ lint: check_bun ## Lint with Biome (check only)
 typecheck: check_bun ## Typecheck the extension (tsc --noEmit)
 	@cd extension && bun run typecheck
 
+.PHONY: check_ai_writing
+check_ai_writing: check_bun ## Fail on em dashes (AI-writing tell)
+	@bun run scripts/check_ai_writing.ts
+
 .PHONY: ci
-ci: lint typecheck ## Run all checks
+ci: lint typecheck check_ai_writing ## Run all checks
 	@echo "$(GREEN)✅ CI checks completed.$(RESET)"

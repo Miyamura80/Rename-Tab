@@ -2,11 +2,11 @@
 
 ## Project
 
-Rename Tab — a Manifest V3 Chrome extension that renames the current tab. All code
+Rename Tab is a Manifest V3 Chrome extension that renames the current tab. All code
 lives in `extension/` (TypeScript, built with Vite + [CRXJS](https://crxjs.dev), Bun
 as package manager). The repo root is just tooling (Makefile, Biome) that delegates in.
 
-**The headline constraint:** Chrome exposes no API for the native tab strip — you
+**The headline constraint:** Chrome exposes no API for the native tab strip, so you
 cannot double-click a native tab, add to its right-click menu, or draw on it (that's
 Arc, a separate browser). The *only* way to rename a tab is to override the page's
 `document.title` from a content script and keep it pinned with a `MutationObserver`
@@ -14,18 +14,18 @@ against SPAs that rewrite it. Every feature is built on that one lever.
 
 ## Architecture
 
-- `extension/src/background.ts` — service worker: routes triggers (F2 command /
+- `extension/src/background.ts` - service worker: routes triggers (F2 command /
   context menu / toolbar click) to the active tab, and owns both name stores.
-- `extension/src/content.ts` — sticky-title engine + the Shadow-DOM inline editor.
-- `extension/src/messages.ts` — typed message contracts between the two.
-- `extension/manifest.config.ts` — the manifest (CRXJS `defineManifest`).
+- `extension/src/content.ts` - sticky-title engine + the Shadow-DOM inline editor.
+- `extension/src/messages.ts` - typed message contracts between the two.
+- `extension/manifest.config.ts` - the manifest (CRXJS `defineManifest`).
 
 Persistence: tab-scoped names → `chrome.storage.session` (die on close/restart);
 url-scoped names ("Remember for this URL") → `chrome.storage.local`. Tab scope wins
 over URL scope. Only the background sees a tab's id, so it owns the stores.
 
 Gotchas:
-- F2 is handled by a content-script keydown listener, **not** `chrome.commands` —
+- F2 is handled by a content-script keydown listener, **not** `chrome.commands`, since
   Chrome rejects a bare function key as a command shortcut (requires Ctrl/Alt).
 - The scripting-injection fallback reads the content script's built path from
   `chrome.runtime.getManifest()`, because CRXJS hashes the filename.
@@ -53,5 +53,5 @@ feature · 🐛 bugfix · ✨ formatting/lint only · ⚙️ config.
 
 ## Git Workflow
 
-`main` is protected — never push to it directly; use PRs, squash-and-merge. Never force
+`main` is protected; never push to it directly; use PRs, squash-and-merge. Never force
 push. Run `make ci` before committing and fix all issues first.

@@ -1,4 +1,4 @@
-// Rename Tab — service worker.
+// Rename Tab: service worker.
 //
 // Responsibilities:
 //   1. Register the right-click context-menu item and the (optional) command.
@@ -77,7 +77,7 @@ async function triggerRename(tab: chrome.tabs.Tab): Promise<void> {
         try {
             // The content script wasn't there (tab was open before install).
             // Inject it using its real built path(s) from the final manifest,
-            // then retry — crxjs hashes the filename so we can't hardcode it.
+            // then retry; crxjs hashes the filename so we can't hardcode it.
             const files = (chrome.runtime.getManifest().content_scripts ?? []).flatMap(
                 (script) => script.js ?? [],
             );
