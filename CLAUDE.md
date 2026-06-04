@@ -1,104 +1,57 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Project
 
-## Project Overview
+Rename Tab — a Manifest V3 Chrome extension that renames the current tab. All code
+lives in `extension/` (TypeScript, built with Vite + [CRXJS](https://crxjs.dev), Bun
+as package manager). The repo root is just tooling (Makefile, Biome) that delegates in.
 
-Super-opinionated Bun/TypeScript stack for fast development. Uses `bun` as runtime and package manager.
-**Before any other work in this repo, enable prek:** `bun add -g prek && prek install`. Hooks are defined in `prek.toml`.
-
-## Common Commands
-
-```bash
-# Onboarding & Setup
-make onboard        # Interactive onboarding CLI (rename, deps, env, hooks, media)
-make setup          # Install dependencies (bun install)
-make all            # Install deps and run main application
-make dev            # Run in watch mode
-
-# Testing
-make test           # Run all tests (bun test)
-make test_fast      # Run fast tests (5s timeout)
-make test_watch     # Run tests in watch mode
-
-# Code Quality (run after major changes)
-make fmt            # Format code with Biome (auto-fix)
-make lint           # Run Biome linter (check only)
-make deadcode       # Find dead code + unused deps with knip
-make typecheck      # Run TypeScript type checker (tsc --noEmit)
-make lint_links     # Check for broken links in markdown files
-make ci             # Run all CI checks (lint, deadcode, typecheck, lint_links)
-
-# Dependencies
-bun install         # Install dependencies
-bun add <pkg>       # Add new dependency
-bun add -d <pkg>    # Add dev dependency
-bun run src/index.ts # Run TypeScript files
-```
+**The headline constraint:** Chrome exposes no API for the native tab strip — you
+cannot double-click a native tab, add to its right-click menu, or draw on it (that's
+Arc, a separate browser). The *only* way to rename a tab is to override the page's
+`document.title` from a content script and keep it pinned with a `MutationObserver`
+against SPAs that rewrite it. Every feature is built on that one lever.
 
 ## Architecture
 
-- **src/** - Source code (entrypoint: `src/index.ts`)
-- **tests/** - Test files (bun test)
-- **frontend/** - Frontend app (Vite/React, separate dependency tree)
+- `extension/src/background.ts` — service worker: routes triggers (F2 command /
+  context menu / toolbar click) to the active tab, and owns both name stores.
+- `extension/src/content.ts` — sticky-title engine + the Shadow-DOM inline editor.
+- `extension/src/messages.ts` — typed message contracts between the two.
+- `extension/manifest.config.ts` — the manifest (CRXJS `defineManifest`).
+
+Persistence: tab-scoped names → `chrome.storage.session` (die on close/restart);
+url-scoped names ("Remember for this URL") → `chrome.storage.local`. Tab scope wins
+over URL scope. Only the background sees a tab's id, so it owns the stores.
+
+Gotchas:
+- F2 is handled by a content-script keydown listener, **not** `chrome.commands` —
+  Chrome rejects a bare function key as a command shortcut (requires Ctrl/Alt).
+- The scripting-injection fallback reads the content script's built path from
+  `chrome.runtime.getManifest()`, because CRXJS hashes the filename.
+
+## Commands
+
+```bash
+make setup      # cd extension && bun install
+make dev        # Vite + CRXJS watch mode with hot-reload (load extension/dist unpacked)
+make build      # production build -> extension/dist
+make zip        # build + package extension/rename-tab.zip
+make ci         # lint + typecheck (run before committing)
+make fmt        # Biome auto-fix
+```
 
 ## Code Style
 
-- camelCase for functions/variables
-- PascalCase for classes/types/interfaces
-- UPPER_CASE for constants
-- kebab-case for file names
-- 4-space indentation, double quotes (enforced by Biome)
+Enforced by Biome (`biome.json`): 4-space indent, double quotes, 88 cols. camelCase
+functions/vars, PascalCase types, UPPER_CASE consts, kebab-case filenames.
 
-## Configuration Pattern
+## Commit Convention
 
-Use environment variables via `process.env` for secrets and config. For structured config, import JSON or use a typed config object:
-
-```typescript
-// .env (git-ignored)
-DATABASE_URL=...
-API_KEY=...
-
-// Access in code
-const apiKey = process.env.API_KEY;
-```
-
-## Testing Pattern
-
-```typescript
-import { describe, test, expect } from "bun:test";
-
-describe("MyFeature", () => {
-    test("should do something", () => {
-        expect(true).toBe(true);
-    });
-});
-```
-
-## Commit Message Convention
-
-Use emoji prefixes indicating change type and magnitude (multiple emojis = 5+ files):
-- 🏗️ initial implementation
-- 🔨 feature changes
-- 🐛 bugfix
-- ✨ formatting/linting only
-- ✅ feature complete with E2E tests
-- ⚙️ config changes
-- 💽 DB schema/migrations
-
-## Post-Change Checks
-
-After major changes, always run `make ci` and fix any issues before committing. If `make ci` is too slow for iterative work, run at minimum:
-- `make fmt` (auto-fix formatting)
-- `make lint` (check for errors)
-- `make typecheck` (verify types)
-
-## Subagents
-
-- Folder-size CI failure → spawn subagent `.claude/agents/folder-refactor-advisor.md`.
+Emoji prefix by change type/magnitude (multiple emojis = 5+ files): 🏗️ initial · 🔨
+feature · 🐛 bugfix · ✨ formatting/lint only · ⚙️ config.
 
 ## Git Workflow
-- **Protected Branch**: `main` is protected. Do not push directly to `main`. Use PRs.
-- **Merge Strategy**: Squash and merge.
-- **Pre-commit CI gate**: Always run make ci before committing any changes. Ensure it passes with zero errors. Do not commit if make ci fails - fix all issues first, then commit.
-- **Never force push**: Do not use `git push --force` or `--force-with-lease`. If you hit a git issue, stop and ask the user for guidance.
+
+`main` is protected — never push to it directly; use PRs, squash-and-merge. Never force
+push. Run `make ci` before committing and fix all issues first.

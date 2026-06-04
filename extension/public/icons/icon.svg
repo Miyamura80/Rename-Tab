@@ -1,0 +1,25 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background tile -->
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#tile)"/>
+
+  <!-- pencil: vertical, rotated 45deg so the tip points to the lower-right -->
+  <g transform="rotate(45 64 64)">
+    <!-- eraser -->
+    <rect x="49" y="22" width="30" height="20" rx="9" fill="#f472b6"/>
+    <!-- ferrule (metal band) -->
+    <rect x="49" y="38" width="30" height="9" fill="#e5e7eb"/>
+    <!-- body -->
+    <rect x="49" y="46" width="30" height="46" fill="#fbbf24"/>
+    <!-- wood shoulder -->
+    <polygon points="49,92 79,92 70,104 58,104" fill="#fde68a"/>
+    <!-- graphite tip -->
+    <polygon points="58,104 70,104 64,114" fill="#1f2937"/>
+  </g>
+</svg>
