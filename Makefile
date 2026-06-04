@@ -14,7 +14,7 @@ PROJECT_ROOT=.
 ########################################################
 
 ### Help
-.PHONY: help docs
+.PHONY: help
 help: ## Show this help message
 	@echo "$(BLUE)Available Make Targets$(RESET)"
 	@echo ""
@@ -43,16 +43,11 @@ onboard: check_bun ## Interactive onboarding CLI (rename, deps, env, hooks, medi
 ########################################################
 
 ### Asset Generation
-.PHONY: banner logo
+.PHONY: banner
 banner: check_bun ## Generate project banner image
 	@echo "$(YELLOW)🎨 Generating banner...$(RESET)"
 	@bun run scripts/generate-banner.ts
 	@echo "$(GREEN)✅ Banner generated at media/banner.png$(RESET)"
-
-logo: check_bun ## Generate logo, icons, and favicon
-	@echo "$(YELLOW)🎨 Generating logo suite...$(RESET)"
-	@bun run scripts/generate-logo.ts
-	@echo "$(GREEN)✅ Logo suite generated in docs/public/$(RESET)"
 
 ########################################################
 # Check dependencies
@@ -115,11 +110,6 @@ all: check_bun ## Install deps and run main application
 
 dev: check_bun ## Run in watch mode
 	@bun run dev
-
-docs: ## Run docs with bun
-	@echo "$(GREEN)📚Running docs...$(RESET)"
-	@cd docs && bun run dev
-	@echo "$(GREEN)✅ Docs run completed.$(RESET)"
 
 ralph: check_jq ## Run Ralph agent loop
 	@echo "$(RED)⚠️  WARNING: Ralph is an autonomous agent that can modify your codebase.$(RESET)"
@@ -187,11 +177,6 @@ typecheck: check_bun ## Run TypeScript type checker
 	@echo "$(YELLOW)🔍 Running TypeScript type checker...$(RESET)"
 	@bunx tsc --noEmit
 	@echo "$(GREEN)✅ Type check completed.$(RESET)"
-
-docs_lint: ## Lint docs links
-	@echo "$(YELLOW)🔍Linting docs links...$(RESET)"
-	@cd docs && bun run lint:links
-	@echo "$(GREEN)✅Docs linting completed.$(RESET)"
 
 lint_links: check_bun ## Check markdown links
 	@echo "$(YELLOW)🔍 Linting markdown links...$(RESET)"

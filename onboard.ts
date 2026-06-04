@@ -375,23 +375,13 @@ function hasGeminiKey(): boolean {
 }
 
 function runMediaGenerators(choice: string, args: string[]): boolean {
-    if (choice === "banner" || choice === "both") {
+    if (choice === "banner") {
         p.log.info("Generating banner...");
         const ok = generateAsset("scripts/generate-banner.ts", args);
         if (ok) {
             p.log.success("Banner generated at media/banner.png");
         } else {
             p.log.error("Banner generation failed.");
-            if (choice === "banner") return false;
-        }
-    }
-    if (choice === "logo" || choice === "both") {
-        p.log.info("Generating logo suite...");
-        const ok = generateAsset("scripts/generate-logo.ts", args);
-        if (ok) {
-            p.log.success("Logo suite generated in docs/public/");
-        } else {
-            p.log.error("Logo generation failed.");
             return false;
         }
     }
@@ -424,9 +414,7 @@ async function cmdMedia(): Promise<boolean> {
         await p.select({
             message: "What to generate?",
             options: [
-                { value: "both", label: "Banner + Logo" },
-                { value: "banner", label: "Banner only" },
-                { value: "logo", label: "Logo only" },
+                { value: "banner", label: "Banner" },
                 { value: "skip", label: "Skip" },
             ],
         }),
@@ -556,7 +544,7 @@ Subcommands:
   deps     Install dependencies (bun install)
   env      Configure environment variables from .env.example
   hooks    Install git hooks via prek
-  media    Generate banner and/or logo assets
+  media    Generate banner asset
 
 Run without a subcommand for the full interactive onboarding flow.`);
         break;
