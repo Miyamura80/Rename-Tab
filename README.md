@@ -8,10 +8,9 @@
 <b>Give any Chrome tab a name of your own, and make it stick, even when the page fights back.</b>
 </p>
 
-Rename Tab is a tiny **Manifest V3** Chrome extension. You rename the tab you're on,
-and the new name shows up wherever Chrome draws your tabs, **including a vertical tab
-strip**, and survives the SPAs (Gmail, YouTube, Notion…) that constantly rewrite their
-own title.
+Rename Tab is a tiny **Manifest V3** Chrome extension. The new name shows up wherever
+Chrome draws your tabs, **including a vertical tab strip**, and survives the SPAs
+(Gmail, YouTube, Notion…) that constantly rewrite their own title.
 
 ## Quick start
 
@@ -30,7 +29,7 @@ appears is your rename button.
 <p align="center">
   <img src="media/screenshot.png" alt="Rename Tab loaded on chrome://extensions, with the pinned toolbar icon highlighted" width="760">
   <br>
-  <em>Loaded via “Load unpacked,” then pinned to the toolbar. That pencil is your rename button.</em>
+  <em>Pinned to the toolbar. That pencil is your rename button.</em>
 </p>
 
 > For live development with hot-reload, run `make dev` instead of `make build`, load
@@ -45,30 +44,22 @@ appears is your rename button.
 | **Right-click the _page_ → Rename tab** | The context-menu route. Right-click the website body, not the tab. |
 | **A global shortcut** *(optional)* | Assign one at `chrome://extensions/shortcuts` (e.g. `Alt+R`), and fires even from the tab strip. |
 
-A small editor pops up in the page. Type the new name, then:
-
-- **Enter** saves · **Esc** cancels · **empty + Enter** clears the rename.
-- Tick **Remember for this URL** to make it permanent (see below).
-
-By default a rename follows the **tab** until you close it. "Remember for this URL"
-ties it to the **URL** instead, so it survives restarts and comes back on every visit.
+A small editor pops up in the page. Type the new name, then **Enter** to save (**Esc**
+cancels, **empty + Enter** clears). A rename follows the **tab** until you close it;
+tick **Remember for this URL** to tie it to the **URL** instead, so it survives restarts
+and returns on every visit.
 
 It can't rename privileged pages (`chrome://*`, the Chrome Web Store, the New Tab Page,
 PDFs). Chrome blocks extensions there, so the trigger simply no-ops.
 
-## You can't right-click the tab itself: here's why
+## Why not just right-click the tab?
 
-The obvious move is to right-click the tab and look for "Rename." **That menu is
-Chrome's own, and no extension can add to it.** Chrome exposes *no* API for the native
-tab strip. You can't add to a tab's right-click menu, and you can't double-click a tab
-to edit it (that's [Arc](https://arc.net), which is its own browser, not an extension).
-
-The only lever Chrome gives an extension is the page's `document.title`. So Rename Tab
-overrides that from a content script and keeps it pinned with a `MutationObserver`; the
-name you typed then appears on the native tab as a side effect. That's the whole trick,
-and it's why renaming is triggered from the page / toolbar rather than the tab.
-
-See [`extension/README.md`](extension/README.md) for the architecture and dev details.
+Chrome exposes no API for the native tab strip, so no extension can add to a tab's
+right-click menu or double-click-to-edit (that's [Arc](https://arc.net), a separate
+browser). The only lever is the page's `document.title`, which Rename Tab overrides from
+a content script and pins with a `MutationObserver`; the name then appears on the native
+tab as a side effect. See [`extension/README.md`](extension/README.md) for the
+architecture and dev details.
 
 ## Project layout
 
