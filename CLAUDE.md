@@ -14,8 +14,8 @@ against SPAs that rewrite it. Every feature is built on that one lever.
 
 ## Architecture
 
-- `extension/src/background.ts` - service worker: routes triggers (F2 command /
-  context menu / toolbar click) to the active tab, and owns both name stores.
+- `extension/src/background.ts` - service worker: routes the toolbar-click trigger to
+  the active tab, and owns both name stores. (F2 lives in the content script.)
 - `extension/src/content.ts` - sticky-title engine + the Shadow-DOM inline editor.
 - `extension/src/messages.ts` - typed message contracts between the two.
 - `extension/manifest.config.ts` - the manifest (CRXJS `defineManifest`).
@@ -25,8 +25,9 @@ url-scoped names ("Remember for this URL") → `chrome.storage.local`. Tab scope
 over URL scope. Only the background sees a tab's id, so it owns the stores.
 
 Gotchas:
-- F2 is handled by a content-script keydown listener, **not** `chrome.commands`, since
-  Chrome rejects a bare function key as a command shortcut (requires Ctrl/Alt).
+- F2 is handled by a content-script keydown listener, not `chrome.commands` (Chrome
+  rejects a bare function key as a command shortcut), so there is no `commands` block in
+  the manifest. The only background-routed trigger is the toolbar click.
 - The scripting-injection fallback reads the content script's built path from
   `chrome.runtime.getManifest()`, because CRXJS hashes the filename.
 

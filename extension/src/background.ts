@@ -1,10 +1,9 @@
 // Rename Tab: service worker.
 //
 // Responsibilities:
-//   1. Register the right-click context-menu item and the (optional) command.
-//   2. Route a rename trigger (command / context menu / toolbar click) to the
-//      active tab's content script, injecting it on the fly if needed.
-//   3. Own the two name stores, since only the background knows a tab's id:
+//   1. Route a toolbar-click rename trigger to the active tab's content script,
+//      injecting it on the fly if needed. (F2 is handled in the content script.)
+//   2. Own the two name stores, since only the background knows a tab's id:
 //        - tab-scoped names -> chrome.storage.session (dies on tab close / restart)
 //        - url-scoped names  -> chrome.storage.local    (persists forever)
 
@@ -15,45 +14,11 @@ import type {
     SavedNameResponse,
 } from "./messages";
 
-const MENU_ID = "rename-tab";
-const COMMAND_ID = "rename-tab";
-
 // ---------------------------------------------------------------------------
 // Triggers
 // ---------------------------------------------------------------------------
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.contextMenus.create({
-        id: MENU_ID,
-        title: "Rename tab",
-        // List every page context so the item shows up no matter what the
-        // pointer is over (plain page, a link, an image, selected text, ...).
-        contexts: ["page", "selection", "link", "image", "video", "audio", "editable"],
-    });
-});
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === MENU_ID && tab) {
-        void triggerRename(tab);
-    }
-});
-
-chrome.commands.onCommand.addListener((command, tab) => {
-    if (command !== COMMAND_ID) {
-        return;
-    }
-    if (tab) {
-        void triggerRename(tab);
-    } else {
-        chrome.tabs.query({ active: true, currentWindow: true }, ([active]) => {
-            if (active) {
-                void triggerRename(active);
-            }
-        });
-    }
-});
-
-// Clicking the toolbar icon is a free third trigger.
+// Clicking the pinned toolbar icon opens the in-page editor.
 chrome.action.onClicked.addListener((tab) => {
     void triggerRename(tab);
 });
