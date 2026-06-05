@@ -3,7 +3,7 @@
 // Does three things:
 //   1. Keeps a custom title "stuck" against pages/SPAs that rewrite document.title.
 //   2. On load, asks the background for any saved name for this tab/URL and applies it.
-//   3. On F2 / right-click / toolbar click, shows a Shadow-DOM inline editor.
+//   3. On F2 or toolbar click, shows a Shadow-DOM inline editor.
 
 import type { Message, SavedNameResponse } from "./messages";
 
